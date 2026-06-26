@@ -36,15 +36,6 @@ const emptyPaymentPeriod = {
   notes: "",
 };
 
-const defaultGlConfiguration = {
-  rou_asset_account: "1705 - Right of Use Asset",
-  lease_expense_account: "6400 - Lease Expense",
-  lt_lease_liability_account: "2320 - Long Term Lease Liability",
-  st_lease_liability_account: "2310 - Short Term Lease Liability",
-  description:
-    "Monthly lease amortization adjustment for approved clinic lease schedules.",
-};
-
 const formatFileSize = (bytes) => {
   if (!bytes) return "0 KB";
 
@@ -67,6 +58,12 @@ const findLeaseId = (response) =>
   response?.data?.id ||
   "";
 
+const normalizeNumericValue = (value) => {
+  if (value === null || value === undefined || value === "") return null;
+
+  return Number(value);
+};
+
 const normalizeLease = (source) => {
   const lease =
     source?.lease ||
@@ -81,8 +78,8 @@ const normalizeLease = (source) => {
     tenant: lease?.tenant || "",
     commencement_date: lease?.commencement_date || "",
     effective_date: lease?.effective_date || "",
-    term_months: Number(lease?.term_months || 0),
-    discount_rate: Number(lease?.discount_rate || 0),
+    term_months: normalizeNumericValue(lease?.term_months),
+    discount_rate: normalizeNumericValue(lease?.discount_rate),
     payment_schedule: Array.isArray(lease?.payment_schedule)
       ? lease.payment_schedule.map(normalizePaymentPeriod)
       : [],
@@ -91,9 +88,9 @@ const normalizeLease = (source) => {
 };
 
 const normalizePaymentPeriod = (period = {}) => ({
-  start_month: Number(period?.start_month || 0),
-  end_month: Number(period?.end_month || 0),
-  monthly_payment: Number(period?.monthly_payment || 0),
+  start_month: normalizeNumericValue(period?.start_month),
+  end_month: normalizeNumericValue(period?.end_month),
+  monthly_payment: normalizeNumericValue(period?.monthly_payment),
   notes: period?.notes || "",
 });
 
@@ -110,6 +107,57 @@ const normalizeApprovalLease = (source) => {
     discount_rate: lease.discount_rate,
     payment_schedule: lease.payment_schedule,
   };
+};
+
+const isMissingRequiredValue = (value) =>
+  value === null ||
+  value === undefined ||
+  (typeof value === "string" && value.trim() === "");
+
+const validateApprovalFields = (lease, glConfiguration = {}) => {
+  const missingFields = [];
+
+  if (isMissingRequiredValue(lease.premises)) missingFields.push("Premises");
+  if (isMissingRequiredValue(lease.effective_date)) {
+    missingFields.push("Effective Date");
+  }
+  if (isMissingRequiredValue(lease.discount_rate)) {
+    missingFields.push("Discount Rate");
+  }
+  if (isMissingRequiredValue(lease.term_months)) missingFields.push("Term Months");
+
+  if (isMissingRequiredValue(glConfiguration.rou_asset_account)) {
+    missingFields.push("ROU Asset Account");
+  }
+  if (isMissingRequiredValue(glConfiguration.lease_expense_account)) {
+    missingFields.push("Lease Expense Account");
+  }
+  if (isMissingRequiredValue(glConfiguration.lt_lease_liability_account)) {
+    missingFields.push("LT Lease Liability Account");
+  }
+  if (isMissingRequiredValue(glConfiguration.st_lease_liability_account)) {
+    missingFields.push("ST Lease Liability Account");
+  }
+
+  if (!lease.payment_schedule.length) {
+    missingFields.push("Payment Schedule");
+  }
+
+  lease.payment_schedule.forEach((period, index) => {
+    const labelPrefix = `Payment Period ${index + 1}`;
+
+    if (isMissingRequiredValue(period.start_month)) {
+      missingFields.push(`${labelPrefix} Start Month`);
+    }
+    if (isMissingRequiredValue(period.end_month)) {
+      missingFields.push(`${labelPrefix} End Month`);
+    }
+    if (isMissingRequiredValue(period.monthly_payment)) {
+      missingFields.push(`${labelPrefix} Monthly Payment`);
+    }
+  });
+
+  return missingFields;
 };
 
 const downloadBlob = (blob, fileName) => {
@@ -129,9 +177,7 @@ function LeaseExtraction() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [leaseId, setLeaseId] = useState("");
   const [lease, setLease] = useState(emptyLease);
-  const [glConfiguration, setGlConfiguration] = useState(
-    defaultGlConfiguration,
-  );
+  const [glConfiguration, setGlConfiguration] = useState();
   const [uploadStatus, setUploadStatus] = useState("idle");
   const [draftStatus, setDraftStatus] = useState("idle");
   const [approvalStatus, setApprovalStatus] = useState("idle");
@@ -140,6 +186,24 @@ function LeaseExtraction() {
   const [approvalResponse, setApprovalResponse] = useState(null);
   const [glResponse, setGlResponse] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
+
+  const resetWorkflow = () => {
+    setSelectedFile(null);
+    setLeaseId("");
+    setLease(emptyLease);
+    setGlConfiguration();
+    setUploadStatus("idle");
+    setDraftStatus("idle");
+    setApprovalStatus("idle");
+    setGlStatus("idle");
+    setErrorMessage("");
+    setApprovalResponse(null);
+    setGlResponse(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const canApprove =
     Boolean(leaseId) &&
@@ -198,7 +262,6 @@ function LeaseExtraction() {
       setLeaseId(extractedLeaseId);
       setLease(normalizeLease(response));
       setGlConfiguration({
-        ...defaultGlConfiguration,
         ...(response?.gl_configuration ||
           response?.lease?.gl_configuration ||
           response?.data?.gl_configuration ||
@@ -225,15 +288,19 @@ function LeaseExtraction() {
       ...current,
       [field]:
         field === "term_months"
-          ? Number(value)
+          ? normalizeNumericValue(value)
           : field === "discount_rate"
-            ? Number(value)
+            ? normalizeNumericValue(value)
             : value,
     }));
   };
 
   const handlePaymentPeriodChange = (index, field, value) => {
-    const numericFields = new Set(["start_month", "end_month", "monthly_payment"]);
+    const numericFields = new Set([
+      "start_month",
+      "end_month",
+      "monthly_payment",
+    ]);
 
     setLease((current) => ({
       ...current,
@@ -241,7 +308,9 @@ function LeaseExtraction() {
         periodIndex === index
           ? {
               ...period,
-              [field]: numericFields.has(field) ? Number(value) : value,
+              [field]: numericFields.has(field)
+                ? normalizeNumericValue(value)
+                : value,
             }
           : period,
       ),
@@ -277,12 +346,23 @@ function LeaseExtraction() {
       return;
     }
 
+    const approvalLease = normalizeApprovalLease(lease);
+    const missingFields = validateApprovalFields(approvalLease, glConfiguration);
+
+    if (missingFields.length) {
+      setApprovalStatus("failed");
+      setErrorMessage(
+        `Approval blocked. Please fill required fields: ${missingFields.join(", ")}.`,
+      );
+      return;
+    }
+
     setErrorMessage("");
     setApprovalStatus("loading");
 
     try {
       const response = await approveLeaseApi(leaseId, {
-        lease: normalizeApprovalLease(lease),
+        lease: approvalLease,
         gl_configuration: glConfiguration,
       });
 
@@ -310,8 +390,7 @@ function LeaseExtraction() {
       const response = await generateGlWorkbookApi(leaseId);
 
       downloadBlob(response.blob, response.fileName);
-      setGlResponse(response);
-      setGlStatus("complete");
+      resetWorkflow();
     } catch (error) {
       setGlStatus("failed");
       setErrorMessage(
@@ -526,14 +605,6 @@ function DraftReviewPanel({
       <div className="payment-schedule-panel">
         <div className="panel-title-row">
           <h2>Payment Schedule</h2>
-          <button
-            className="secondary-button compact-button"
-            type="button"
-            onClick={onAddPaymentPeriod}
-          >
-            Add Period
-            <Plus size={16} />
-          </button>
         </div>
         {lease.payment_schedule.length ? (
           <div className="payment-period-list">
@@ -546,8 +617,7 @@ function DraftReviewPanel({
                   <div>
                     <strong>Period {index + 1}</strong>
                     <span>
-                      Months {period.start_month ?? 0} -{" "}
-                      {period.end_month ?? 0}
+                      Months {period.start_month ?? 0} - {period.end_month ?? 0}
                     </span>
                   </div>
                   <button
@@ -601,6 +671,16 @@ function DraftReviewPanel({
         ) : (
           <div className="empty-payment-state">No payment schedule found.</div>
         )}
+        <div className="action-row">
+          <button
+            className="secondary-button compact-button"
+            type="button"
+            onClick={onAddPaymentPeriod}
+          >
+            Add Period
+            <Plus size={16} />
+          </button>
+        </div>
       </div>
 
       <div className="account-grid">
