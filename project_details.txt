@@ -1,0 +1,421 @@
+Here is the problem we will be discussing today for one of my clients. They want to take data from their leases across many sites, to create entries in their General Ledger. Today it is a manual process that takes 2-3 days per month.
+
+
+
+Core Problem Summary: Lease Amortization (for AI Automation)
+
+
+
+The current lease amortization process is highly manual, inconsistent, and not structured for automation, which makes it difficult to apply AI effectively.
+
+
+
+1. Manual data extraction from contracts
+
+
+
+Lease data is read manually from contracts and entered into a spreadsheet template. 
+The amortization schedule is then created by copying and extending formulas.
+
+
+Implication for AI:
+There is no structured input layer—AI would first need to interpret unstructured contracts before anything else.
+
+
+
+2. Fragmented and inconsistent file structure
+
+
+
+Files are stored across SharePoint folders by company and clinic, but:
+Some spreadsheets have one clinic per file
+Others combine multiple clinics in one sheet
+There is no consistent format across all schedules. 
+
+
+Implication for AI:
+Lack of standardization makes it hard to build a repeatable or scalable automation solution.
+
+
+
+3. Repetitive, manual monthly processing
+
+
+
+Each month, the process requires:
+Manually shifting schedule data
+Recalculating balances
+Copying values into a journal entry file
+This is repeated across dozens of schedules (60–70).
+
+
+Implication for AI:
+The problem is not just creation—it’s ongoing operational workload that is repetitive but not systematized.
+
+
+
+4. Disconnected amortization and journal entry workflows
+
+
+
+After updating schedules:
+Key values are manually copied into a separate journal entry file
+Entries are created and uploaded location by location
+
+
+Implication for AI:
+The process is split across multiple artifacts, rather than a single integrated flow.
+
+
+
+5. Semi-standard template, but not truly system-driven
+
+
+
+There is a “template,” but:
+It still requires manual interpretation of each contract
+It relies heavily on human judgment and setup
+
+
+Implication for AI:
+The template is not parameterized or driven by structured inputs, limiting automation potential.
+
+
+
+Bottom-line Problem Statement
+
+
+
+The lease amortization process today is:
+
+
+
+Manual in data intake (contract → spreadsheet)
+Inconsistent in structure (files, formats, layouts)
+Repetitive in execution (monthly updates and journal entries)
+Disconnected across steps (schedule → journal entry → upload)
+
+
+As a result, it is not “AI-ready”—automation requires:
+
+
+
+Structured inputs
+Standardized schema
+Formula-driven or system-driven outputs
+
+
+Framed for AI Opportunity (as discussed)
+
+
+
+The core automation opportunity identified was:
+
+
+
+Use AI to extract structured data from contracts
+Standardize into a uniform amortization template
+Enable formula-driven schedule + journal entry creation
+Reduce or eliminate monthly manual updates
+
+Call recording -
+
+
+
+0:57 - nilesh
+nilesh, how are you?
+
+
+
+1:01 - nilesh
+Hi, James. Good to see you all. How are you?
+
+
+
+1:04 - Unidentified Speaker
+I'm good, bro. Good.
+
+
+
+1:07 - James Stovall
+Yeah, no, I'm doing well. Summer is here and things are going well. Great. Good to know that.
+
+
+
+1:15 - nilesh
+So I've seen the details that you sent to me and it seems like a automation process for the lease agreement. So I think like what I understood We make sure we are on the same page.
+
+
+
+1:32 - Unidentified Speaker
+Yeah, sounds good. That's right. So let's say we have the different lease agreements.
+
+
+
+1:38 - nilesh
+So users are supposed to upload the lease agreements. Then we need to extract the data from the lease agreement, which could be like our start date, end date, monthly rents, renewables. Once we extracted this information, we need to create an amortization schedule which includes let's say some sort of template. Template or you know which will have like uh formulas, monthly liability calculations, amortization expense and um one they'll open the spreadsheet, each each one for each lease and move the schedules, update the balance, check formulas, you know. And after this we need to create a journal entry. Usually journal entries are done on softwares, let's say, you know accounting softwares. Is there any accounting software where we need to make these entries or how does it work? Yeah, what I was gonna say, so I sent you three files I think in the attachment.
+
+
+
+2:40 - James Stovall
+gonna walk you through. And I'm not sure if you're in a position where you can look at my screen share if I share with you. Is that can you do that? Yeah, I do that. Yeah, please go ahead.
+
+
+
+2:50 - Unidentified Speaker
+Okay, so it sounds good.
+
+
+
+2:51 - James Stovall
+So, if you look at the one, I'm share my screen.
+
+
+
+2:56 - Unidentified Speaker
+Let's see here.
+
+
+
+2:59 - James Stovall
+Share screen.
+
+
+
+3:04 - Unidentified Speaker
+Okay.
+
+
+
+3:05 - James Stovall
+So, if you can see Excel, let me show you the version. What they've been doing is let's see what we got here, real quick.
+
+
+
+3:22 - James Stovall
+Okay.
+
+
+
+3:25 - James Stovall
+So, what they've been doing is they take this raw data from the that shows the lease schedule and it's the financial calculations and it shows how much all the different things, the lease liability, the interest that they're paying, and they have something by month that tracks through all of this.
+
+
+
+3:49 - nilesh
+This is this whole file is just one property.
+
+
+
+3:52 - James Stovall
+One property, right? Okay, yeah, but it's every month they do that. So they're spending two to three days per month going through and doing this. And so, what I was going to do is, wait, essentially, so for if they're doing it for May, what they would do is they have some formulas that they run to create a new value here and whatever, M54, they take. Values like this ROU asset ending balance and they look one year out for some of the values of this. And then, in the formulas that I sent, take this arc APC file as like the data input. And then, what they're doing, in my opinion, is not good thing. So, they're manually copying over these values for April. And you can find it like the 290. If I go back over to here, you can see they pull one year out this 290 number. So for April of a year from now, and then they just manually are copying off, they don't even have it formula driven. The short-term lease, so 194, and they go and pull that from here over in column M.
+
+
+
+5:07 - James Stovall
+And then this ROU 497 that they pull from, let's see, where is that one? Right here in column L. And so they use this, the one that's called the lease dash arc APC. And then from these three numbers here in row two, then they do a bunch of calculations. They compare it year's numbers that they just replace, and their end product is down here in rows 31 through 34. That's kind of in this, um, I don't know what it is, like uh cream color or whatever it is. Um, and this is what they do. So, to your question about the um financial system, they do have a financial system, but they actually have a pretty easy way that they can upload from Excel. All these transactions right in their financial system. So they're not looking to build out like an interface into that now. What they really just want is to say, can we build a outcome that would take all the different leases and make into a file that they can pull like all of the April lease adjustments that they're going to load into their financial system. So I'll show I've done because I've done an example of one of them, but I wanted to show you what I've done. But does that do you kind of I know you probably want to look at the formulas more it, but does that make sense a little bit? It makes sense.
+
+
+
+6:40 - nilesh
+So the only question I have is: we are creating a journal laser for them where we are trying to give them an export they can directly import into their financial system. So is that for all individual properties or is that like a single final file, including all those 70 properties calculation? Yeah, all three of the all the two Excel files that I've shown you are all for one property.
+
+
+
+7:05 - James Stovall
+And so I have a bunch more files from their other properties, but I don't think they're as well formatted. And so that's part of the problem: they've got different sets of data that contain this information, but it's not all formatted the same. And so part of it is to say, should we use AI to to standardize the structure of this? Or, you know, there's like an Excel solution, or there could be an AI solution. There's a couple of different ways that you could try and solve this. But ultimately, if I said it very simply, it would take the file, the arc-APC, or the arc APC file that has all the raw data. We have a file like that for every single location, and then essentially get to what's in these four lines.
+
+
+
+7:47 - Unidentified Speaker
+And be able to do that.
+
+
+
+7:48 - James Stovall
+So, what I did, so that's the kind of the problem. So, what I did is I took that, I made my own version. I sent you to it. It's called Arc APC James version. And so, I took the core data that was in there and I added a couple of columns that pull a calculation. So, like, for example, on the far column O that I added, that's the least liability 12 months out. So we can just for one row do a VLOOKUP that goes across and kind of pulls that together. Obviously, there's ways we could do it with AI instead. But then what I did is I created, if you can see my screen now, on this GL updates James created, I went ahead and said, hey, we could go ahead and run the lease financials.
+
+
+
+8:33 - Unidentified Speaker
+And I did a VLOOKUP and essentially built an Excel version of this that does for this one property. All of their lease adjustments for the rest of the year. Because all it is is comparing last month's to this month's and going through a formula set for that. And so I perceive I made a slightly more elegant way of solving this for all the lease adjustments for, you know, whatever the future that you could copy and paste.
+
+
+
+8:58 - James Stovall
+So, what I'm imagining is what my mission that I was going to ask you is to say, if this is something that you're interested in and you feel that you could do, can I like either share a bunch more files, or maybe I share you a SharePoint file that has a bunch of these lease files in it?
+
+
+
+9:15 - Unidentified Speaker
+And then what I would want to do, what I would imagine is that the client has all of these in a SharePoint file.
+
+
+
+9:21 - James Stovall
+And so, if we can make something like this that has the data structured in an output way like this, then we could either have a master Excel sheet. That could pull from all the different lease files and essentially get one master file that has all of the April lease adjustments for all the different files.
+
+
+
+9:42 - Unidentified Speaker
+Time full date and all types of things.
+
+
+
+9:45 - James Stovall
+So that's what I was thinking: is to make something that could pull that. So essentially, they could have one master file that they could just upload. Hey, here's the four lines that need to be made for every lease times whatever it is, the 30 to 70, whatever the number is, the number of leases that they have. That makes sense.
+
+
+
+10:04 - Unidentified Speaker
+What you said.
+
+
+
+10:05 - nilesh
+So these like let's say these four entries for properties, right? So we need to do exactly the same for all the 70 properties. Our final outcome will be these four numbers. One like a two debit and two credits, right? Yes, yes.
+
+
+
+10:23 - James Stovall
+But the data and all the other spreadsheets is not quite I mean it has the same data in it, but it's not structured in the same way. So it's part consolidation, part data cleanup to be able to achieve this outcome. Okay.
+
+
+
+10:38 - nilesh
+I believe the debit and credits over here are like, it calculate, let's say, for the six, seven, eight, ten, nine rows, right? So let's say sixteen, seven, nine, six, is that what we are supposed to pay? And that is the credit that we're making.
+
+
+
+10:52 - James Stovall
+And so what I sent this back to the client to validate that I captured it right. And you can see my calculation, but I put in some VLOOKUPS and the formulas to do the calculation. And then I'm just having it basically: if it's, if it's negative, it goes as a credit. And then over here, if it's positive, it goes as a debit. But it's going to be the same structure across that. But essentially, in just these four formulas over here, all I did was recreate the formula. Of what they were doing over here in their file. But they did more every month, they're copying the numbers in and manually copying over things and doing this process that I think is not very good. And so I just tried to turn it into a more elegant formulas to be able to build that. And now I could just take these formulas and copy it down all the rest of the lease. But I sent this to them on Thursday or Friday and said, Hey, can you look at this? And I believe this is captured it right, but can you make sure that I'm doing this right? But I'm recreating that.
+
+
+
+11:56 - nilesh
+I don't have much idea about the lease, but is it like we are taking a property on the sublease and we are trying to understand how much money we are getting and how much we are paying? So we can kind of, yeah.
+
+
+
+12:07 - James Stovall
+So essentially, to say in the general ledger, every month we're making a lease payment. And so it's, it's, I don't, I don't, I'm not a finance person either. But essentially saying that they have to do certain transactions to show how much is left on the lease, how much have we paid off, what's the balance on it, to put that in the general ledger for the company financials.
+
+
+
+12:32 - nilesh
+That's ultimately what it is.
+
+
+
+12:33 - James Stovall
+So it's taking that detailed lease schedule, but right now they're manually doing it every single month. When, in my opinion, based on the formulas and what I saw, you can just essentially, you know what the GL entries are going to be for the rest of the lease. And so we could go ahead and have them there. And again, like that would, this is one of my questions to them is, I don't know if you can preload the general ledger entries. You know what I mean? Like if I already know the general ledger entries for this one location for all the rest of the year, can I go ahead and predate it and say, this is the one for June 26th, even though June 26th is not here yet?
+
+
+
+13:12 - nilesh
+Right, but the amount, if you look at the amount, those are very easy. You know, it might be related to something like Have Ec, like heat, ventilation, air conditioning kind of bills.
+
+
+
+13:22 - Unidentified Speaker
+No, no, no, this is all like the lease.
+
+
+
+13:23 - James Stovall
+So, like, they've entered a contract where they're paying a set amount on the lease for you know five years or three years.
+
+
+
+13:31 - nilesh
+And so they're, it's like, yeah, but if you look at the amount, like the amount varies, you know, let's say 17,589 divided.
+
+
+
+13:39 - Unidentified Speaker
+Yes. You know.
+
+
+
+13:41 - James Stovall
+17 it's because of the financial calculations of how they calculate the lease, because it's essentially saying how much of a liability does the company have for the rest of this lease. That's the nature of what it is. I can go back and kind of give you the transcript or the summary meeting notes of when I talked it through with the client, just so you can hear a little bit more business context on it. But that's essentially what I understood: that. They have to kind of capture financially what the lease represents for them in terms of what they really owe and what should be the expectation. And also, I think you get, you know, there's certain tax implications about what happens with the lease and how you're paying it and things like that. But I guess to say it's very predictable that they already have the data for what their lease payments are going to be every month through the end of the lease. So there's no new information that they get every month.
+
+
+
+14:36 - Unidentified Speaker
+Sure makes sense, yeah.
+
+
+
+14:37 - nilesh
+If you can send me this the transcript as well, that will be helpful.
+
+
+
+14:42 - James Stovall
+Yeah, so what I'll do is I'll probably rather than send you like it's a lot of size of files, I don't know if you can access SharePoint, but if I send you a link to a SharePoint folder with a bunch of these in it, can you how does that sound?
+
+
+
+14:56 - nilesh
+Yeah, that sounds good, but you need to make those SharePoint as like a public link so I can access. Otherwise, you'll have to invite me within your account. Yeah, that's what do.
+
+
+
+15:06 - James Stovall
+I don't want to share it publicly for everyone, but I was share it with you. Okay, makes sense.
+
+
+
+15:11 - Unidentified Speaker
+Yeah.
+
+
+
+15:12 - James Stovall
+And then what I would say is: if the first step will be to look through the data files and compare this one example that I've shown you to the other ones. I haven't gone through all the other data files, but like, for example, there's some that have, if I show you the core data, like this, this over here, there's some where one spreadsheet represents seven different locations. And so, like columns C through M is location one, and then maybe columns Q through Z is the next location, rather than be like a clean one file, one location. And so, there's a little bit of that that we have to look through. So, if there's questions that you have of looking through the data, I can go back and ask the client about that. But that's a little bit of where. They just said, Hey, some of the other ones are not as not as nicely formatted or whatever, but they should have the same core information.
+
+
+
+16:09 - Unidentified Speaker
+Okay, makes sense.
+
+
+
+16:10 - nilesh
+Based on this, like they're also paying in interest, right? So then it could be like the they are paying in interest for the loans for which based on which the property was purchased. That is the reason the the rent payment will be the same for each month, but the profit will vary. Because as you go down, you pay less amount of interest in the profit will increase.
+
+
+
+16:34 - Unidentified Speaker
+Exactly. I agree.
+
+
+
+16:35 - James Stovall
+I think that's a factor in it.
+
+
+
+16:40 - James Stovall
+So, yeah, so that's that's a first mini project. And then, if you know, like I said, I think this is the finance function. If this client is interested in doing more, so if we can do this right. That will get a good. And by the way, again, please, you you can bill in the part that you're billing to us, you can count this time, of course, in the time that you bill us. So I think that that's fine. But why don't you take a that? And then.
+
+
+
+17:09 - James Stovall
+when you're able to go through that, and if you have questions, let me know. And then I'm gonna follow up with the client because I didn't hear anything when I sent over this version because I wanna make sure that my understanding of their calculations is correct. You can see the one in the original file that I showed you. Like I said, the one that does not say James version, those are their versions of that that I have not done any editing to. And then the one that's called the James version. That's one where I created this whole new tab. And then in the lease file, I suggested to add labels to these calculations. And I made this calculation to make it easier to look up the data in that. Now, you don't have to follow the same way that I do it. If there's a better way or you want to do it differently, that's okay. But that gives you what I perceive as what I understand of their calculation. Sure, let me go through this and I can.
+
+
+
+18:03 - nilesh
+write it down back like what is my understanding for the calculation. Since the rent payment is static, right, gonna get the same rent amount throughout the month. The only variable it seems like the interest that we are good supposed to pay, which is going to decrease as in and when like we pay the interest that reduce our principal as well. Yes.
+
+
+
+18:29 - Unidentified Speaker
+Exactly.
+
+
+
+18:30 - James Stovall
+So I don't know all the financial and the reasons behind it, but that's what I kind of asked them: to say, hey, if I'm following your calculation that you've already been doing for the past 12 months, ultimately, you know, it doesn't matter, right? About all the understanding. But if there's questions, certainly I'm happy to ask them. I have a good relationship with them. So. Sure, we can mimic the way they have done this into actual.
