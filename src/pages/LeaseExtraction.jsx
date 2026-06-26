@@ -26,6 +26,7 @@ const emptyLease = {
   term_months: 0,
   discount_rate: 0,
   payment_schedule: [],
+  review_reason: "",
 };
 
 const emptyPaymentPeriod = {
@@ -85,6 +86,7 @@ const normalizeLease = (source) => {
     payment_schedule: Array.isArray(lease?.payment_schedule)
       ? lease.payment_schedule.map(normalizePaymentPeriod)
       : [],
+    review_reason: lease?.review_reason || "",
   };
 };
 
@@ -94,6 +96,21 @@ const normalizePaymentPeriod = (period = {}) => ({
   monthly_payment: Number(period?.monthly_payment || 0),
   notes: period?.notes || "",
 });
+
+const normalizeApprovalLease = (source) => {
+  const lease = normalizeLease(source);
+
+  return {
+    premises: lease.premises,
+    landlord: lease.landlord,
+    tenant: lease.tenant,
+    commencement_date: lease.commencement_date,
+    effective_date: lease.effective_date,
+    term_months: lease.term_months,
+    discount_rate: lease.discount_rate,
+    payment_schedule: lease.payment_schedule,
+  };
+};
 
 const downloadBlob = (blob, fileName) => {
   const url = URL.createObjectURL(blob);
@@ -265,7 +282,7 @@ function LeaseExtraction() {
 
     try {
       const response = await approveLeaseApi(leaseId, {
-        lease: normalizeLease(lease),
+        lease: normalizeApprovalLease(lease),
         gl_configuration: glConfiguration,
       });
 
@@ -497,6 +514,13 @@ function DraftReviewPanel({
           value={lease.discount_rate}
           onChange={(value) => onLeaseChange("discount_rate", value)}
         />
+        <EditableField
+          as="textarea"
+          className="full-width"
+          label="Review Reason"
+          value={lease.review_reason || ""}
+          readOnly
+        />
       </div>
 
       <div className="payment-schedule-panel">
@@ -685,6 +709,7 @@ function EditableField({
   className = "",
   label,
   onChange,
+  readOnly = false,
   type = "text",
   value,
   placeholder = "",
@@ -695,15 +720,17 @@ function EditableField({
       {as === "textarea" ? (
         <textarea
           value={value ?? ""}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => onChange?.(event.target.value)}
           placeholder={placeholder}
+          readOnly={readOnly}
         />
       ) : (
         <input
           type={type}
           value={value ?? ""}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => onChange?.(event.target.value)}
           placeholder={placeholder}
+          readOnly={readOnly}
         />
       )}
     </label>
