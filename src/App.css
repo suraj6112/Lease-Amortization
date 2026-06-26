@@ -626,6 +626,10 @@ table {
   background: #ffffff;
 }
 
+.editable-table {
+  min-width: 1180px;
+}
+
 th,
 td {
   padding: 14px 16px;
@@ -659,6 +663,63 @@ td span {
   color: #64748b;
   font-size: 12px;
   margin-top: 2px;
+}
+
+.editable-table input,
+.editable-table textarea {
+  width: 100%;
+  border: 1px solid #dbe5ed;
+  border-radius: 10px;
+  color: #0f172a;
+  background: #f8fafc;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.editable-table input {
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.editable-table textarea {
+  min-height: 72px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.editable-table th:nth-child(1),
+.editable-table th:nth-child(2),
+.editable-table th:nth-child(3),
+.editable-table th:nth-child(7),
+.editable-table td:nth-child(1),
+.editable-table td:nth-child(2),
+.editable-table td:nth-child(3),
+.editable-table td:nth-child(7) {
+  width: 120px;
+}
+
+.editable-table th:last-child,
+.editable-table td:last-child {
+  width: 72px;
+  text-align: center;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compact-button {
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.danger-button {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fff7f7;
 }
 
 .align-right {
@@ -891,6 +952,63 @@ td span {
 .payment-schedule-panel {
   display: grid;
   gap: 12px;
+}
+
+.payment-period-list {
+  display: grid;
+  gap: 14px;
+}
+
+.payment-period-card {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.payment-period-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.payment-period-header strong,
+.payment-period-header span {
+  display: block;
+}
+
+.payment-period-header strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.payment-period-header span {
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.payment-period-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.empty-payment-state {
+  padding: 22px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
 }
 
 .payment-schedule-panel h2,
@@ -1169,6 +1287,19 @@ td span {
   resize: vertical;
 }
 
+.checkbox-field {
+  align-content: start;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 20px;
+  min-height: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: #0f766e;
+  cursor: pointer;
+}
+
 .text-area-field {
   margin-top: 16px;
 }
@@ -1318,6 +1449,10 @@ td span {
   .wide-left {
     grid-template-columns: 1fr;
   }
+
+  .payment-period-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -1370,9 +1505,16 @@ td span {
   .workbook-toolbar,
   .form-grid,
   .account-grid,
+  .payment-period-grid,
   .lease-id-row,
   .api-result-grid {
     grid-template-columns: 1fr;
+  }
+
+  .panel-title-row,
+  .payment-period-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .review-header {

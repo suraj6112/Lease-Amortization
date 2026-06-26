@@ -4,8 +4,10 @@ import {
   CloudUpload,
   Download,
   FileText,
+  Plus,
   RefreshCw,
   Send,
+  Trash2,
   Upload,
 } from "lucide-react";
 import SectionHeader from "../components/shared/SectionHeader";
@@ -24,8 +26,13 @@ const emptyLease = {
   term_months: 0,
   discount_rate: 0,
   payment_schedule: [],
-  requires_manual_review: false,
-  review_reason: "",
+};
+
+const emptyPaymentPeriod = {
+  start_month: 0,
+  end_month: 0,
+  monthly_payment: 0,
+  notes: "",
 };
 
 const defaultGlConfiguration = {
@@ -68,13 +75,25 @@ const normalizeLease = (source) => {
     source;
 
   return {
-    ...emptyLease,
-    ...(lease && typeof lease === "object" ? lease : {}),
+    premises: lease?.premises || "",
+    landlord: lease?.landlord || "",
+    tenant: lease?.tenant || "",
+    commencement_date: lease?.commencement_date || "",
+    effective_date: lease?.effective_date || "",
+    term_months: Number(lease?.term_months || 0),
+    discount_rate: Number(lease?.discount_rate || 0),
     payment_schedule: Array.isArray(lease?.payment_schedule)
-      ? lease.payment_schedule
+      ? lease.payment_schedule.map(normalizePaymentPeriod)
       : [],
   };
 };
+
+const normalizePaymentPeriod = (period = {}) => ({
+  start_month: Number(period?.start_month || 0),
+  end_month: Number(period?.end_month || 0),
+  monthly_payment: Number(period?.monthly_payment || 0),
+  notes: period?.notes || "",
+});
 
 const downloadBlob = (blob, fileName) => {
   const url = URL.createObjectURL(blob);
@@ -196,6 +215,38 @@ function LeaseExtraction() {
     }));
   };
 
+  const handlePaymentPeriodChange = (index, field, value) => {
+    const numericFields = new Set(["start_month", "end_month", "monthly_payment"]);
+
+    setLease((current) => ({
+      ...current,
+      payment_schedule: current.payment_schedule.map((period, periodIndex) =>
+        periodIndex === index
+          ? {
+              ...period,
+              [field]: numericFields.has(field) ? Number(value) : value,
+            }
+          : period,
+      ),
+    }));
+  };
+
+  const handleAddPaymentPeriod = () => {
+    setLease((current) => ({
+      ...current,
+      payment_schedule: [...current.payment_schedule, emptyPaymentPeriod],
+    }));
+  };
+
+  const handleRemovePaymentPeriod = (index) => {
+    setLease((current) => ({
+      ...current,
+      payment_schedule: current.payment_schedule.filter(
+        (_, periodIndex) => periodIndex !== index,
+      ),
+    }));
+  };
+
   const handleGlChange = (field, value) => {
     setGlConfiguration((current) => ({
       ...current,
@@ -214,7 +265,7 @@ function LeaseExtraction() {
 
     try {
       const response = await approveLeaseApi(leaseId, {
-        lease,
+        lease: normalizeLease(lease),
         gl_configuration: glConfiguration,
       });
 
@@ -292,12 +343,13 @@ function LeaseExtraction() {
             errorMessage={errorMessage}
             glConfiguration={glConfiguration}
             lease={lease}
-            leaseId={leaseId}
             approvalStatus={approvalStatus}
             onApprove={handleApproveLease}
             onGlChange={handleGlChange}
             onLeaseChange={handleLeaseChange}
-            onLeaseIdChange={setLeaseId}
+            onPaymentPeriodChange={handlePaymentPeriodChange}
+            onAddPaymentPeriod={handleAddPaymentPeriod}
+            onRemovePaymentPeriod={handleRemovePaymentPeriod}
           />
         )}
 
@@ -395,25 +447,16 @@ function DraftReviewPanel({
   errorMessage,
   glConfiguration,
   lease,
-  leaseId,
   approvalStatus,
   onApprove,
   onGlChange,
   onLeaseChange,
-  onLeaseIdChange,
+  onPaymentPeriodChange,
+  onAddPaymentPeriod,
+  onRemovePaymentPeriod,
 }) {
   return (
     <div className="review-workspace">
-      <div className="lease-id-row">
-        <label className="field">
-          <span>Lease ID</span>
-          <input
-            value={leaseId}
-            onChange={(event) => onLeaseIdChange(event.target.value)}
-          />
-        </label>
-      </div>
-
       <div className="form-grid">
         <EditableField
           label="Premises"
@@ -454,49 +497,86 @@ function DraftReviewPanel({
           value={lease.discount_rate}
           onChange={(value) => onLeaseChange("discount_rate", value)}
         />
-        <EditableField
-          as="textarea"
-          className="full-width"
-          label="Review Reason"
-          value={lease.review_reason || ""}
-          onChange={(value) => onLeaseChange("review_reason", value)}
-        />
       </div>
 
       <div className="payment-schedule-panel">
-        <h2>Payment Schedule</h2>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Start</th>
-                <th>End</th>
-                <th>Monthly Payment</th>
-                <th>Rule</th>
-                <th>Frequency</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lease.payment_schedule.length ? (
-                lease.payment_schedule.map((period, index) => (
-                  <tr
-                    key={`${period.start_month}-${period.end_month}-${index}`}
-                  >
-                    <td>{period.start_month}</td>
-                    <td>{period.end_month}</td>
-                    <td>{period.monthly_payment ?? "-"}</td>
-                    <td>{period.calculation_rule || "-"}</td>
-                    <td>{period.adjustment_frequency_months || "-"}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5">No payment schedule found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="panel-title-row">
+          <h2>Payment Schedule</h2>
+          <button
+            className="secondary-button compact-button"
+            type="button"
+            onClick={onAddPaymentPeriod}
+          >
+            Add Period
+            <Plus size={16} />
+          </button>
         </div>
+        {lease.payment_schedule.length ? (
+          <div className="payment-period-list">
+            {lease.payment_schedule.map((period, index) => (
+              <section
+                className="payment-period-card"
+                key={`${period.start_month}-${period.end_month}-${index}`}
+              >
+                <div className="payment-period-header">
+                  <div>
+                    <strong>Period {index + 1}</strong>
+                    <span>
+                      Months {period.start_month ?? 0} -{" "}
+                      {period.end_month ?? 0}
+                    </span>
+                  </div>
+                  <button
+                    className="icon-button danger-button"
+                    type="button"
+                    aria-label="Remove payment period"
+                    onClick={() => onRemovePaymentPeriod(index)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+
+                <div className="payment-period-grid">
+                  <EditableField
+                    label="Start Month"
+                    type="number"
+                    value={period.start_month ?? 0}
+                    onChange={(value) =>
+                      onPaymentPeriodChange(index, "start_month", value)
+                    }
+                  />
+                  <EditableField
+                    label="End Month"
+                    type="number"
+                    value={period.end_month ?? 0}
+                    onChange={(value) =>
+                      onPaymentPeriodChange(index, "end_month", value)
+                    }
+                  />
+                  <EditableField
+                    label="Monthly Payment"
+                    type="number"
+                    value={period.monthly_payment ?? 0}
+                    onChange={(value) =>
+                      onPaymentPeriodChange(index, "monthly_payment", value)
+                    }
+                  />
+                  <EditableField
+                    as="textarea"
+                    className="full-width"
+                    label="Notes"
+                    value={period.notes || ""}
+                    onChange={(value) =>
+                      onPaymentPeriodChange(index, "notes", value)
+                    }
+                  />
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-payment-state">No payment schedule found.</div>
+        )}
       </div>
 
       <div className="account-grid">
@@ -616,6 +696,7 @@ function EditableField({
         <textarea
           value={value ?? ""}
           onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
         />
       ) : (
         <input

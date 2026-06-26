@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BrowserRouter,
   Navigate,
@@ -19,6 +19,19 @@ function AppRoutes() {
     Boolean(localStorage.getItem('lease_token')),
   )
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setIsAuthenticated(false)
+      navigate('/login', { replace: true })
+    }
+
+    window.addEventListener('lease-auth-expired', handleAuthExpired)
+
+    return () => {
+      window.removeEventListener('lease-auth-expired', handleAuthExpired)
+    }
+  }, [navigate])
 
   return (
     <Routes>
